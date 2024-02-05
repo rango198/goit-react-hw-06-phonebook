@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+
 export const getAllContacts = store => store.contacts;
 
 export const getFilteredContacts = createSelector(

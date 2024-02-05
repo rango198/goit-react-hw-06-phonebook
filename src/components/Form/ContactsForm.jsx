@@ -11,6 +11,10 @@ import {
   Formstyled,
   Label,
 } from './ContactsForm.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'components/redux/contacts-slice';
+import { getFilteredContacts } from 'components/redux/selectors';
+import { Notify } from 'notiflix';
 
 const initialValues = {
   name: '',
@@ -41,7 +45,30 @@ const schema = Yup.object().shape({
     .required(),
 });
 
-export const ContactsForm = ({ addContacts }) => {
+export const ContactsForm = () => {
+  const contacts = useSelector(getFilteredContacts);
+  const dispatch = useDispatch();
+
+  const addContacts = newContact => {
+    const isContactsExist = contacts.some(
+      contact =>
+        contact.name.toLowerCase().trim() ===
+          newContact.name.toLowerCase().trim() ||
+        contact.number.trim() === newContact.number.trim()
+    );
+    if (isContactsExist) {
+      Notify.warning(`${newContact.name}: is already in contacts`, {
+        width: '400px',
+        position: 'center-center',
+        timeout: 3000,
+        fontSize: '20px',
+      });
+    } else {
+      const action = addContact(newContact);
+      dispatch(action);
+    }
+  };
+
   return (
     <div>
       <Formik
